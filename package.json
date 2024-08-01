@@ -1,0 +1,25 @@
+{
+  "name": "visual-modeller",
+  "version": "0.0.1",
+  "description": "Interactive systems modelling in the browser",
+  "main": "build/visual-modeller.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/grahampullan/visual-modeller.git"
+  },
+  "author": "Graham Pullan",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/grahampullan/visual-modeller/issues"
+  },
+  "homepage": "https://github.com/grahampullan/visual-modeller#readme",
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^26.0.1",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-replace": "^5.0.7",
+    "@rollup/plugin-terser": "^0.4.4"
+  }
+}
