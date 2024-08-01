@@ -1,1 +1,1 @@
-# visual-modeller
+# visual-modeller-core
