@@ -2,7 +2,9 @@
   "name": "visual-modeller",
   "version": "0.0.1",
   "description": "Interactive systems modelling in the browser",
-  "main": "build/visual-modeller.js",
+  "main": "build/visual-modeller.min.js",
+  "module": "build/visual-modeller.js",
+  "type":"module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
