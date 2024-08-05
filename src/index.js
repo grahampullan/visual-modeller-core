@@ -1,5 +1,5 @@
 export {Model} from './Model';
 export {Node} from './Node';
-export {Connection} from './Connection';
+export {Socket} from './Socket';
 export {Link} from './Link';
 

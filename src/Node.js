@@ -1,32 +1,58 @@
 class Node {
     constructor(options) {
         this.name = options.name || 'node';
-        this.inputs = options.inputs || [];
-        this.outputs = options.outputs || [];
+        this.sockets = [];
+        this.state = options.state || {};
+        this.maxSocketId = 0;
+        if (options.sockets) {
+            options.sockets.forEach(socket => {
+                this.addSocket(socket);
+            });
+        }
     }
 
-    addInput(connection) {
-        this.inputs.push(connection);
+    getSocketId() {
+        let newSocketId = this.maxSocketId;
+        this.maxSocketId++;
+        return newSocketId;
     }
 
-    setInputByIndex(index, connection) {
-        this.inputs[index] = connection;
+    get leftSockets() {
+        return this.sockets.filter(s => s.position === 'left');
     }
 
-    addOutput(connection) {
-        this.outputs.push(connection);
+    get rightSockets() {
+        return this.sockets.filter(s => s.position === 'right');
     }
 
-    setOutputByIndex(index, connection) {
-        this.outputs[index] = connection;
+    get topSockets() {
+        return this.sockets.filter(s => s.position === 'top');
     }
 
-    removeInput(connection) {
-        this.inputs = this.inputs.filter(input => input !== connection);
+    get bottomSockets() {
+        return this.sockets.filter(s => s.position === 'bottom');
+    }
+    
+    addSocket(socket) {
+        socket.id = this.getSocketId();
+        this.sockets.push(socket);
     }
 
-    removeOutput(connection) {
-        this.outputs = this.outputs.filter(output => output !== connection);
+    setSocketByIndex(index, socket) {
+        socket.id = this.getSocketId();
+        this.sockets[index] = socket;
+    }
+
+    removeSocket(socket) {
+        this.sockets = this.sockets.filter(s => s !== socket);
+    }
+
+    removeSocketById(id) {
+        this.sockets = this.sockets.filter(s => s.id !== id);
+    }
+
+    removeSocketByIndex(index) {
+        this.sockets = this.sockets.filter((s, i) => i !== index);
     }
 
 }
