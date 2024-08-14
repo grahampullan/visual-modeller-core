@@ -8,7 +8,7 @@ export default {
 	output: [
 		{
 			file: 'build/visual-modeller-core.min.js',
-        	name: 'visualModelleCore',
+        	name: 'visualModellerCore',
 			format: 'iife', 
 			sourcemap: true,
 			plugins: [terser()]
