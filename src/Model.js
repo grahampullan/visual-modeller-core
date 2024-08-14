@@ -20,6 +20,12 @@ class Model {
         return newLinkId;
     }
 
+    getLogId() {
+        let newLogId = `log-${this.maxLogId}`;
+        this.maxLogId++;
+        return newLogId;
+    }
+
     addNode(node) {
         node.id = this.getNodeId();
         this.nodes.push(node);
