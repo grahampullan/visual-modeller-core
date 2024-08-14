@@ -1,10 +1,7 @@
 class Link {
     constructor(options) {
-        this.id = options.id || '';
-        this.inputNodeId = options.inputNodeId || '';
-        this.inputSocketId = options.inputSocketId || '';
-        this.outputNodeId = options.outputNodeId || '';
-        this.outputSocketId = options.outputSocketId || '';
+        this.socket1 = options.socket1 || null;
+        this.socket2 = options.socket2 || null;
         this.state = options.state || {};
     }
 }

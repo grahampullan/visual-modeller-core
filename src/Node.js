@@ -43,6 +43,10 @@ class Node {
         this.sockets[index] = socket;
     }
 
+    getSocketByIndex(index) {
+        return this.sockets[index];
+    }   
+
     removeSocket(socket) {
         this.sockets = this.sockets.filter(s => s !== socket);
     }
