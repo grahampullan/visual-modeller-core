@@ -7,14 +7,14 @@ export default {
 	input: 'src/index.js',
 	output: [
 		{
-			file: 'build/visual-modeller.min.js',
-        	name: 'visualModeller',
+			file: 'build/visual-modeller-core.min.js',
+        	name: 'visualModelleCore',
 			format: 'iife', 
 			sourcemap: true,
 			plugins: [terser()]
 		},
 		{
-			file: 'build/visual-modeller.js',
+			file: 'build/visual-modeller-core.js',
 			format: 'esm'
 		}
 	],
