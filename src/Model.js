@@ -64,6 +64,10 @@ class Model {
     removeLogById(id) {
         this.logs = this.logs.filter(l => l.id !== id);
     }
+
+    getLinkBySocket(socket) {
+        return this.links.find(l => l.socket1 === socket || l.socket2 === socket);
+    }
 }
 
 export { Model };
