@@ -71,6 +71,10 @@ class Model {
         this.logs = this.logs.filter(l => l.id !== id);
     }
 
+    clearLogs() {
+        this.logs.forEach(l => l.clear());
+    }
+
     getLinkBySocket(socket) {
         return this.links.find(l => l.socket1 === socket || l.socket2 === socket);
     }
@@ -151,7 +155,6 @@ class Socket {
     constructor(options) {
         this.name = options.name || 'socket';
         this.state = options.state || {};
-        this.linkId = options.linkId || '';
         this.position = options.position || 'left';  
     }
 }
@@ -182,7 +185,11 @@ class Log {
     }
 
     writeToLog() {
-        this.states.push(this.target.state);
+        this.states.push({...this.target.state});
+    }
+
+    clear() {
+        this.states = [];
     }
 }
 

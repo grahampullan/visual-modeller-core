@@ -6,7 +6,11 @@ class Log {
     }
 
     writeToLog() {
-        this.states.push(this.target.state);
+        this.states.push({...this.target.state});
+    }
+
+    clear() {
+        this.states = [];
     }
 }
 

@@ -71,6 +71,10 @@ class Model {
         this.logs = this.logs.filter(l => l.id !== id);
     }
 
+    clearLogs() {
+        this.logs.forEach(l => l.clear());
+    }
+
     getLinkBySocket(socket) {
         return this.links.find(l => l.socket1 === socket || l.socket2 === socket);
     }
