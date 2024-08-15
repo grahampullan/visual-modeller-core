@@ -33,6 +33,12 @@ class Model {
 
     addLink(link) {
         link.id = this.getLinkId();
+        const s1 = link.socket1;
+        s1.link = link;
+        s1.otherSocket = link.socket2;
+        const s2 = link.socket2;
+        s2.link = link;
+        s2.otherSocket = link.socket1;
         this.links.push(link);
     }
 
@@ -67,6 +73,10 @@ class Model {
 
     getLinkBySocket(socket) {
         return this.links.find(l => l.socket1 === socket || l.socket2 === socket);
+    }
+
+    getNodeBySocket(socket) {
+        return this.nodes.find(n => n.sockets.includes(socket));
     }
 }
 
