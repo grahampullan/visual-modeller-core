@@ -12,7 +12,7 @@ class Node {
     }
 
     getSocketId() {
-        let newSocketId = this.maxSocketId;
+        let newSocketId = `socket-${this.maxSocketId}`;
         this.maxSocketId++;
         return newSocketId;
     }
@@ -45,7 +45,11 @@ class Node {
 
     getSocketByIndex(index) {
         return this.sockets[index];
-    }   
+    }
+    
+    getSocketByName(name) {
+        return this.sockets.find(s => s.name === name);
+    }
 
     removeSocket(socket) {
         this.sockets = this.sockets.filter(s => s !== socket);
