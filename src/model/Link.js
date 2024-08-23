@@ -1,5 +1,7 @@
 class Link {
     constructor(options) {
+        options = options || {};
+        this.name = options.name || "link";
         this.socket1 = options.socket1 || null;
         this.socket2 = options.socket2 || null;
         this.state = options.state || {};
