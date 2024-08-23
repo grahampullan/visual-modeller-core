@@ -23,5 +23,8 @@
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-replace": "^5.0.7",
     "@rollup/plugin-terser": "^0.4.4"
+  },
+  "dependencies": {
+    "board-box": "^0.2.42"
   }
 }

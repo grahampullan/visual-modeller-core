@@ -82,6 +82,26 @@ class Model {
     getNodeBySocket(socket) {
         return this.nodes.find(n => n.sockets.includes(socket));
     }
+
+    getNodeClassByClassName(className) {
+        if (!this.availableNodeClasses) {
+            return null;
+        }
+        const availableNodeClassNames = this.availableNodeClasses.map(c => {
+            const instance = new c();
+            return instance.className;
+        });
+        const index = availableNodeClassNames.indexOf(className);
+        if (index === -1) {
+            return null;
+        } else {
+            return this.availableNodeClasses[index];
+        }   
+    }
+
+
+
+
 }
 
 export { Model };
