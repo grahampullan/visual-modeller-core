@@ -1,5 +1,9 @@
+import { Socket } from './Socket.js';
+import { Log } from './Log.js';
+
 class Model {
     constructor(options) {
+        options = options || {};
         this.nodes = options.nodes || [];
         this.links = options.links || [];
         this.logs = options.logs || [];
@@ -83,6 +87,14 @@ class Model {
         return this.nodes.find(n => n.sockets.includes(socket));
     }
 
+    getNodeByName(name) {
+        return this.nodes.find(n => n.name === name);
+    }
+
+    getLinkByName(name) {
+        return this.links.find(l => l.name === name);
+    }
+
     getNodeClassByClassName(className) {
         if (!this.availableNodeClasses) {
             return null;
@@ -97,6 +109,33 @@ class Model {
         } else {
             return this.availableNodeClasses[index];
         }   
+    }
+
+    getLinkClassByClassName(className) {
+        if (!this.availableLinkClasses) {
+            return null;
+        }
+        if (this.availableLinkClasses.length === 1) {
+            return this.availableLinkClasses[0];
+        }
+        const availableLinkClassNames = this.availableLinkClasses.map(c => {
+            const instance = new c();
+            return instance.className;
+        });
+        const index = availableLinkClassNames.indexOf(className);
+        if (index === -1) {
+            return null;
+        } else {
+            return this.availableLinkClasses[index];
+        }   
+    }
+
+    get allSockets() {
+        return this.nodes.map(n => n.sockets).flat();
+    }
+
+    getSocketByName(socketName) {
+        return this.allSockets.find(s => s.name == socketName);
     }
 
     toJson() {
@@ -118,6 +157,7 @@ class Model {
         })
         modelForJson.links = this.links.map(l => {
             const lJson = {};
+            lJson.name = l.name;
             lJson.socket1Name = l.socket1.name;
             lJson.socket2Name = l.socket2.name;
             return lJson;
@@ -125,7 +165,7 @@ class Model {
         modelForJson.logs = this.logs.map(l => {
             const lJson = {};
             lJson.name = l.name;
-            lJson.targetId = l.target.id;
+            lJson.targetName = l.target.name;
             return lJson;
         });
         return JSON.stringify(modelForJson);
@@ -139,6 +179,40 @@ class Model {
         a.href = url;
         a.download = 'model.json';
         a.click();
+    }
+
+    fromJsonObject(jsonModel) {
+        this.config = jsonModel.config;
+        jsonModel.nodes.forEach(n => {
+            const NodeClass = this.getNodeClassByClassName(n.className);
+            const node = new NodeClass(n);
+            node.sockets = n.sockets.map(s => new Socket(s));    
+            this.addNode(node);
+        });
+        jsonModel.links.forEach(l => {
+            const socket1 = this.getSocketByName(l.socket1Name);
+            const socket2 = this.getSocketByName(l.socket2Name);
+            let LinkClass;
+            if (!l.className) {
+                LinkClass = this.getLinkClassByClassName();
+            } else {
+                LinkClass = this.getLinkClassByClassName(l.className);
+            }
+            this.addLink(new LinkClass({name:l.name, socket1, socket2}));
+        });
+        jsonModel.logs.forEach(l => {
+            const targetNode = this.getNodeByName(l.targetName);
+            const targetLink = this.getLinkByName(l.targetName);
+            const target = targetNode || targetLink;
+            this.addLog(new Log({name:l.name, target}));
+        });
+
+    }
+
+    async loadFromUrl(url) {
+        const response = await fetch(url);
+        const json = await response.json();
+        this.fromJsonObject(json);
     }
 
 

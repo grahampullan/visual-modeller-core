@@ -1,5 +1,30 @@
+class Socket {
+    constructor(options) {
+        this.name = options.name || 'socket';
+        this.state = options.state || {};
+        this.position = options.position || 'left';  
+    }
+}
+
+class Log {
+    constructor(options) {
+        this.name = options.name || 'log';
+        this.target = options.target || null;
+        this.states = [];
+    }
+
+    writeToLog() {
+        this.states.push({...this.target.state});
+    }
+
+    clear() {
+        this.states = [];
+    }
+}
+
 class Model {
     constructor(options) {
+        options = options || {};
         this.nodes = options.nodes || [];
         this.links = options.links || [];
         this.logs = options.logs || [];
@@ -83,6 +108,14 @@ class Model {
         return this.nodes.find(n => n.sockets.includes(socket));
     }
 
+    getNodeByName(name) {
+        return this.nodes.find(n => n.name === name);
+    }
+
+    getLinkByName(name) {
+        return this.links.find(l => l.name === name);
+    }
+
     getNodeClassByClassName(className) {
         if (!this.availableNodeClasses) {
             return null;
@@ -97,6 +130,35 @@ class Model {
         } else {
             return this.availableNodeClasses[index];
         }   
+    }
+
+    getLinkClassByClassName(className) {
+        if (!this.availableLinkClasses) {
+            return null;
+        }
+        if (this.availableLinkClasses.length === 1) {
+            return this.availableLinkClasses[0];
+        }
+        const availableLinkClassNames = this.availableLinkClasses.map(c => {
+            const instance = new c();
+            return instance.className;
+        });
+        const index = availableLinkClassNames.indexOf(className);
+        if (index === -1) {
+            return null;
+        } else {
+            return this.availableLinkClasses[index];
+        }   
+    }
+
+    get allSockets() {
+        return this.nodes.map(n => n.sockets).flat();
+    }
+
+    getSocketByName(socketName) {
+        console.log(this.allSockets.map(s => s.name));
+        console.log(socketName);
+        return this.allSockets.find(s => s.name == socketName);
     }
 
     toJson() {
@@ -118,14 +180,15 @@ class Model {
         });
         modelForJson.links = this.links.map(l => {
             const lJson = {};
-            lJson.socket1 = l.socket1.name;
-            lJson.socket2 = l.socket2.name;
+            lJson.name = l.name;
+            lJson.socket1Name = l.socket1.name;
+            lJson.socket2Name = l.socket2.name;
             return lJson;
         });
         modelForJson.logs = this.logs.map(l => {
             const lJson = {};
             lJson.name = l.name;
-            lJson.targetId = l.target.id;
+            lJson.targetName = l.target.name;
             return lJson;
         });
         return JSON.stringify(modelForJson);
@@ -139,6 +202,55 @@ class Model {
         a.href = url;
         a.download = 'model.json';
         a.click();
+    }
+
+    fromJsonObject(jsonModel) {
+        console.log(jsonModel);
+        this.config = jsonModel.config;
+        jsonModel.nodes.forEach(n => {
+            const NodeClass = this.getNodeClassByClassName(n.className);
+            const node = new NodeClass(n);
+            node.sockets = n.sockets.map(s => new Socket(s));
+            console.log(node);
+            this.addNode(node);
+        });
+        console.log("nodes added");
+        jsonModel.links.forEach(l => {
+            console.log(l);
+            const socket1 = this.getSocketByName(l.socket1Name);
+            const socket2 = this.getSocketByName(l.socket2Name);
+            console.log(socket1, socket2);
+            let LinkClass;
+            if (!l.className) {
+                LinkClass = this.getLinkClassByClassName();
+            } else {
+                LinkClass = this.getLinkClassByClassName(l.className);
+            }
+            console.log(LinkClass);
+            console.log(this.availableLinkClasses);
+            this.addLink(new LinkClass({name:l.name, socket1, socket2}));
+            console.log("link added");
+        });
+        console.log("links added");
+        jsonModel.logs.forEach(l => {
+            console.log(l);
+            const targetNode = this.getNodeByName(l.targetName);
+            const targetLink = this.getLinkByName(l.targetName);
+            console.log(targetNode, targetLink);
+            const target = targetNode || targetLink;
+            console.log(target);
+            this.addLog(new Log({name:l.name, target}));
+        });
+        console.log("logs added");
+
+
+
+    }
+
+    async loadFromUrl(url) {
+        const response = await fetch(url);
+        const json = await response.json();
+        this.fromJsonObject(json);
     }
 
 
@@ -213,16 +325,10 @@ class Node {
 
 }
 
-class Socket {
-    constructor(options) {
-        this.name = options.name || 'socket';
-        this.state = options.state || {};
-        this.position = options.position || 'left';  
-    }
-}
-
 class Link {
     constructor(options) {
+        options = options || {};
+        this.name = options.name || "link";
         this.socket1 = options.socket1 || null;
         this.socket2 = options.socket2 || null;
         this.state = options.state || {};
@@ -236,22 +342,6 @@ class Link {
         } else {
             return null;
         }
-    }
-}
-
-class Log {
-    constructor(options) {
-        this.name = options.name || 'log';
-        this.target = options.target || null;
-        this.states = [];
-    }
-
-    writeToLog() {
-        this.states.push({...this.target.state});
-    }
-
-    clear() {
-        this.states = [];
     }
 }
 
