@@ -99,6 +99,48 @@ class Model {
         }   
     }
 
+    toJson() {
+        const modelForJson = {};
+        modelForJson.config = this.config;
+        modelForJson.nodes = this.nodes.map(n => {
+            const nJson = {};
+            nJson.name = n.name;
+            nJson.className = n.className;
+            nJson.state = n.state;
+            nJson.sockets = n.sockets.map(s => {
+                const sJson = {};
+                sJson.name = s.name;
+                sJson.position = s.position;
+                sJson.state = s.state;
+                return sJson;
+            });
+            return nJson;
+        })
+        modelForJson.links = this.links.map(l => {
+            const lJson = {};
+            lJson.socket1Name = l.socket1.name;
+            lJson.socket2Name = l.socket2.name;
+            return lJson;
+        });
+        modelForJson.logs = this.logs.map(l => {
+            const lJson = {};
+            lJson.name = l.name;
+            lJson.targetId = l.target.id;
+            return lJson;
+        });
+        return JSON.stringify(modelForJson);
+    }
+
+    saveToFile() {
+        const modelJson = this.toJson();
+        const blob = new Blob([modelJson], {type: 'application/json'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'model.json';
+        a.click();
+    }
+
 
 
 
