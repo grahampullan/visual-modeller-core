@@ -1,9 +1,14 @@
 import { Socket } from './Socket.js';
 import { Log } from './Log.js';
+import { Context } from '../ui/Context.js';
+import { Board } from '../ui/Board.js';
+import { Box } from '../ui/Box.js';
+import { ModelStructureViewer } from '../ui/ModelStructureViewer.js';
 
 class Model {
     constructor(options) {
         options = options || {};
+        this.name = options.name || 'modelName';
         this.nodes = options.nodes || [];
         this.links = options.links || [];
         this.logs = options.logs || [];
@@ -146,6 +151,7 @@ class Model {
             nJson.name = n.name;
             nJson.className = n.className;
             nJson.state = n.state;
+            nJson.displayConfig = n.displayConfig;
             nJson.sockets = n.sockets.map(s => {
                 const sJson = {};
                 sJson.name = s.name;
@@ -215,6 +221,36 @@ class Model {
         this.fromJsonObject(json);
     }
 
+    startVis(target) {
+        const targetId = target || 'target';
+        console.log("creating context");
+        const ctx = new Context();
+        console.log("Context created");
+        console.log("adding model to context");
+        ctx.addModel(this);
+        console.log("model added");
+        console.log(ctx)
+        const board = new Board({targetId, modelName:this.name, widthPerCent:100, height:800});
+        ctx.addBoard(board);
+        console.log("board added");
+        const nodeDisplayData = this.nodes.map(n => n.displayData);
+        console.log(nodeDisplayData);
+        const linkDisplayData = this.links.map(l => l.displayData);
+        console.log(linkDisplayData);
+        const box = new Box({x:0, y:0, width:750, height:500, className: "model-structure-viewer", component: new ModelStructureViewer({data:{nodes:nodeDisplayData, links:linkDisplayData}}) })
+        console.log("box created");
+        console.log(box);
+        board.addBox(box);
+        console.log("box added to board");
+        console.log("making board");
+        board.make();
+        console.log(ctx);
+        return ctx;
+    }
+
+    // Next steps
+    // make a ModelComponent class based on dbslice/Plot.js
+    // then make a ModelStructureViewer class based on ModelComponent
 
 
 
