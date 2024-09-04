@@ -3,6 +3,7 @@ class Socket {
         this.name = options.name || 'socket';
         this.state = options.state || {};
         this.position = options.position || 'left';  
+        this.order = options.order || 0; 
     }
 }
 

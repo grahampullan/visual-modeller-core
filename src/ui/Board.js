@@ -1,8 +1,10 @@
 import {Board as bbBoard} from 'board-box';
 
 class Board extends bbBoard {
-    constructor() {
-        super();
+    constructor(options) {
+        options = options || {};
+        super(options);
+        this.sharedState.modelName = options.modelName || "modelName";
     }
 }
 

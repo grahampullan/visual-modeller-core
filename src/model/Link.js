@@ -16,6 +16,14 @@ class Link {
             return null;
         }
     }
+
+    get displayData() {
+        return {
+            name: this.name,
+            socketNames: [this.socket1.name, this.socket2.name]
+        };
+    }
+
 }
 
 export { Link };
