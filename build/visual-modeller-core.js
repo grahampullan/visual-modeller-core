@@ -6487,7 +6487,7 @@ class NodePlot extends Plot {
         const topSocketSpacing = nodeRectWidth / (topSockets.length + 1);
         const bottomSocketSpacing = nodeRectWidth / (bottomSockets.length + 1);
 
-        const normalLength = 100;
+        const normalLength = 140;
 
         leftSockets.forEach((socket, index) => {
             const socketY = (index + 1) * leftSocketSpacing + nodeBoxMargin;
