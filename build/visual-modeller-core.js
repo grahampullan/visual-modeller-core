@@ -5356,6 +5356,8 @@ class Board extends Board$1 {
         options = options || {};
         super(options);
         this.sharedState.modelName = options.modelName || "modelName";
+        this.sharedState.selectedNode = new Observable({state:{name:null}});
+        this.sharedState.selectedLog = new Observable({state:{name:null}});
     }
 }
 
