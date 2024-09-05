@@ -204,7 +204,7 @@ class Model {
             } else {
                 LinkClass = this.getLinkClassByClassName(l.className);
             }
-            this.addLink(new LinkClass({name:l.name, socket1, socket2}));
+            this.addLink(new LinkClass({name:l.name, socket1, socket2, colorIndex:l.colorIndex}));
         });
         jsonModel.logs.forEach(l => {
             const targetNode = this.getNodeByName(l.targetName);

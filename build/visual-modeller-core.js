@@ -6575,17 +6575,20 @@ class ModelStructureViewer extends Plot {
         this.sharedState.socketAbsolutePositions = socketAbsolutePositions;
 
         const plotArea = select(`#${this.plotAreaId}`);
-        plotArea.append("defs").append("marker")
-            .attr("id", "arrowhead")
-            .attr("viewBox", "-10 -10 20 20")
-            .attr("refX", 10)
-            .attr("refY", 0)
-            .attr("markerWidth", 10)
-            .attr("markerHeight", 10)
-            .attr("orient", "auto")
-            .append("path")
-                .attr("d", "M-6,-6 L6,0 L-6,6 Z")
-                .attr("fill", "black");
+        Tableau10.forEach( (color, i) => {
+            const markerId = `arrowhead-${i}`;
+            plotArea.append("defs").append("marker")
+                .attr("id", markerId)
+                .attr("viewBox", "-10 -10 20 20")
+                .attr("refX", 10)
+                .attr("refY", 0)
+                .attr("markerWidth", 10)
+                .attr("markerHeight", 10)
+                .attr("orient", "auto")
+                .append("path")
+                    .attr("d", "M-6,-6 L6,0 L-6,6 Z")
+                    .attr("fill", color);
+        });
 
 
         this.update();
@@ -6650,9 +6653,10 @@ class ModelStructureViewer extends Plot {
                     .attr("id", linkId)
                     .attr("d", pathData)
                     .attr("fill", "none")
-                    .attr("stroke", "black")
+                    .attr("stroke", Tableau10[link.colorIndex])
+                    //.attr("stroke", "black")
                     .attr("stroke-width", 2)
-                    .attr("marker-end", "url(#arrowhead)");
+                    .attr("marker-end", `url(#arrowhead-${link.colorIndex})`);
             } else {
                 linkPath.attr("d", pathData);
             }
@@ -6862,7 +6866,7 @@ class Model {
             } else {
                 LinkClass = this.getLinkClassByClassName(l.className);
             }
-            this.addLink(new LinkClass({name:l.name, socket1, socket2}));
+            this.addLink(new LinkClass({name:l.name, socket1, socket2, colorIndex:l.colorIndex}));
         });
         jsonModel.logs.forEach(l => {
             const targetNode = this.getNodeByName(l.targetName);
@@ -7005,6 +7009,7 @@ class Link {
         this.socket1 = options.socket1 || null;
         this.socket2 = options.socket2 || null;
         this.state = options.state || {};
+        this.colorIndex = options.colorIndex || 0;
     }
 
     getOtherSocket(socket) {
@@ -7020,7 +7025,8 @@ class Link {
     get displayData() {
         return {
             name: this.name,
-            socketNames: [this.socket1.name, this.socket2.name]
+            socketNames: [this.socket1.name, this.socket2.name],
+            colorIndex: this.colorIndex
         };
     }
 
