@@ -11,6 +11,8 @@ class LogViewer extends Plot {
         this.updateHeader();
         this.addPlotAreaSvg();
         this.update();
+        const selectedLog = this.sharedStateByAncestorId[this.boardId].selectedLog;
+        selectedLog.subscribe(this.highlightLog.bind(this));
     }
 
     update() {
@@ -18,12 +20,13 @@ class LogViewer extends Plot {
         this.updatePlotAreaSize();
 
         const logs = this.data.logs || [];
+        const selectedLog = this.sharedStateByAncestorId[this.boardId].selectedLog;
 
         const lines = [];
         logs.forEach(log => {
-            line = {};
+            const line = {};
             line.name = log.name;
-            line.target = log.target;
+            line.targetName = log.targetName;
             line.colorIndex = log.colorIndex;
             const pts = log.states.map((state, i) => {
                 return {x: i, y: state.value};
@@ -33,8 +36,10 @@ class LogViewer extends Plot {
         });
 
         const plotArea = d3.select(`#${this.plotAreaId}`);
+
         const plotAreaWidth = this.plotAreaWidth;
         const plotAreaHeight = this.plotAreaHeight;
+  
         const margin = {top: 20, right: 20, bottom: 30, left: 50};
         const width = plotAreaWidth - margin.left - margin.right;
         const height = plotAreaHeight - margin.top - margin.bottom;
@@ -45,39 +50,48 @@ class LogViewer extends Plot {
                 y: d3.extent(line.pts, d => d.y)
             };
         });
-        const xExtent = d3.extent(lineExtents, d => d.x);
-        const yExtent = d3.extent(lineExtents, d => d.y);
-        const x = d3.scaleLinear().domain(xExtent).range([0, width]);
-        const y = d3.scaleLinear().domain([0,yExtent[1]]).range([height, 0]);
 
-        const linePlotSvg = plotArea.append("g")
-            .attr("transform", `translate(${margin.left}, ${margin.top})`);
+        const xExtent = d3.extent(lineExtents.map(l=>l.x).flat());
+        const yExtent = d3.extent(lineExtents.map(l=>l.y).flat());
+
+        const x = d3.scaleLinear().domain(xExtent).range([0, width]);
+        const y = d3.scaleLinear().domain(yExtent).range([height, 0]);
+
+        let linePlotSvg = plotArea.select(".line-plot-svg");
+        if (linePlotSvg.empty()) {
+            linePlotSvg = plotArea.append("g")
+                .attr("class", "line-plot-svg")
+                .attr("transform", `translate(${margin.left}, ${margin.top})`)
+                .style("pointer-events", "all");
+        }
         
         const line = d3.line()
             .x(d => x(d.x))
             .y(d => y(d.y));
 
+        
         const allLines = linePlotSvg.selectAll(".line")
             .data(lines, d => d.name);
 
 
-
         allLines.enter()
             .each(function(d) {
-                d3.select(this).append("path")
-                    .datum(d.pts)
+                d3.select(this).append("g")
                     .attr("class", "line")
-                    .attr("d", line)
-                    .attr("stroke", d => d3.schemeTableau10[d.colorIndex])
-                    .attr("fill", "none")
-                    .attr("stroke-width", 2);
+                    .append("path")
+                        .attr("class", "line-path")
+                        .attr("d", d =>line(d.pts))
+                        .attr("stroke", d => d3.schemeTableau10[d.colorIndex])
+                        .attr("fill", "none")
+                        .attr("stroke-width", 2)
+                        .on("mouseover", tipOn);
+
             });
 
         allLines
             .each(function(d) {
                 d3.select(this).select("path")
-                    .datum(d.pts)
-                    .attr("d", line)
+                    .attr("d", d =>line(d.pts))
                     .attr("stroke", d => d3.schemeTableau10[d.colorIndex]);
             });
 
@@ -86,13 +100,45 @@ class LogViewer extends Plot {
         const xAxis = d3.axisBottom(x);
         const yAxis = d3.axisLeft(y);
 
-        linePlotSvg.append("g")
-            .attr("transform", `translate(0, ${height})`)
-            .call(xAxis);
+        let gX = linePlotSvg.select(".x-axis");
+        if (gX.empty()) {
+            gX = linePlotSvg.append("g")
+                .attr("class", "x-axis")
+                .attr("transform", `translate(0, ${height})`)
+                .call(xAxis);
+        } else {
 
-        linePlotSvg.append("g")
-            .call(yAxis);
+            gX.call(xAxis);
+        }
+
+        let gY = linePlotSvg.select(".y-axis");
+        if (gY.empty()) {
+            gY = linePlotSvg.append("g")
+                .attr("class", "y-axis")
+                .call(yAxis);
+        } else {
+            gY.call(yAxis);
+        }
+            
+        function tipOn(event, d) {
+            selectedLog.state = {name: d.name, targetName: d.targetName};
+        };
     
+    }
+
+    highlightLog(data) {
+        const logName = data.name;
+        const plotArea = d3.select(`#${this.plotAreaId}`);
+        const allLines = plotArea.selectAll(".line");
+        allLines.each(function(d) {
+            if (d.name == logName) {
+                d3.select(this).select("path")
+                    .attr("stroke-width", 4);
+            } else {
+                d3.select(this).select("path")
+                    .attr("stroke-width", 2);
+            }
+        });
     }
 
     

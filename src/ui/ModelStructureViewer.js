@@ -14,7 +14,8 @@ class ModelStructureViewer extends Plot {
         this.updateHeader();
         this.addPlotAreaSvg();
         this.updateHeader();
-  
+        const selectedLog = this.sharedStateByAncestorId[this.boardId].selectedLog;
+        selectedLog.subscribe(this.highlightLog.bind(this));
         const sockets = this.data.nodes.map( node => node.sockets ).flat();
         const socketAbsolutePositions = sockets.map( socket => 
             { 
@@ -24,7 +25,9 @@ class ModelStructureViewer extends Plot {
             });
         this.sharedState.socketAbsolutePositions = socketAbsolutePositions;
 
+
         const plotArea = d3.select(`#${this.plotAreaId}`);
+        plotArea.style("pointer-events", "all");
         d3.schemeTableau10.forEach( (color, i) => {
             const markerId = `arrowhead-${i}`;
             plotArea.append("defs").append("marker")
@@ -46,7 +49,6 @@ class ModelStructureViewer extends Plot {
 
     update() {
         const nodes = this.data.nodes || [];
-        const links = this.data.links || [];
 
         const nodeNamesInData = nodes.map(node => node.name);
         const currentBoxes = this.sharedState.boxes || [];
@@ -70,6 +72,8 @@ class ModelStructureViewer extends Plot {
         const socketName = data.socketName;
         const thisSocketCen = data.cen;
         const thisSocketNormal = data.normal;
+        const logNames = this.data.logs.map( log => ({name:log.name, targetName:log.targetName}) );
+        const selectedLog = this.sharedStateByAncestorId[this.boardId].selectedLog;
 
         const link = this.data.links.find( link => link.socketNames.includes(socketName) );
         const otherSocketName = link.socketNames.find( name => name != socketName );
@@ -100,21 +104,51 @@ class ModelStructureViewer extends Plot {
             let linkPath = plotArea.select(`#${linkId}`);
             if (linkPath.empty()) {
                 linkPath = plotArea.append("path")
+                    .datum(link)
+                    .attr("class", "link")
                     .attr("id", linkId)
                     .attr("d", pathData)
                     .attr("fill", "none")
                     .attr("stroke", d3.schemeTableau10[link.colorIndex])
-                    //.attr("stroke", "black")
                     .attr("stroke-width", 2)
-                    .attr("marker-end", `url(#arrowhead-${link.colorIndex})`);
+                    .attr("marker-end", `url(#arrowhead-${link.colorIndex})`)
+                    .on("mouseover", tipOnLink);
             } else {
                 linkPath.attr("d", pathData);
             }
+        }
 
-
-
+        function tipOnLink(event, d) {
+            const linkName = d.name;
+            const log = logNames.find( l => l.targetName == linkName);
+            if (log) {
+                selectedLog.state = {name: log.name, targetName: log.targetName};
+            }
         }
     }
+
+    highlightLog(data) {
+        const targetName = data.targetName;
+        if (this.data.links.map(l => l.name).includes(targetName)) {
+           this.highlightLink(targetName);
+        }
+    }
+
+    highlightLink(linkName) {
+        const plotArea = d3.select(`#${this.plotAreaId}`);
+        const linkId = `${this.id}-${linkName.replace(/ /g, "-")}`;
+        const allLinks = plotArea.selectAll(".link");
+        allLinks.each(function(d) {
+            const linkPath = d3.select(this);
+            if (linkPath.attr("id") == linkId) {
+                linkPath.attr("stroke-width", 4);
+            } else {
+                linkPath.attr("stroke-width", 2);
+            }
+        });
+    }
+
+
 }
 
 export { ModelStructureViewer };

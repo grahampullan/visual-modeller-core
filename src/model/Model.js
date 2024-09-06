@@ -4,6 +4,7 @@ import { Context } from '../ui/Context.js';
 import { Board } from '../ui/Board.js';
 import { Box } from '../ui/Box.js';
 import { ModelStructureViewer } from '../ui/ModelStructureViewer.js';
+import { LogViewer } from '../ui/LogViewer.js';
 
 class Model {
     constructor(options) {
@@ -156,6 +157,9 @@ class Model {
                 const sJson = {};
                 sJson.name = s.name;
                 sJson.position = s.position;
+                if (s.state.valueType == "variable" && s.state.max == Infinity) {
+                    s.state.max = -1;
+                }
                 sJson.state = s.state;
                 return sJson;
             });
@@ -192,7 +196,12 @@ class Model {
         jsonModel.nodes.forEach(n => {
             const NodeClass = this.getNodeClassByClassName(n.className);
             const node = new NodeClass(n);
-            node.sockets = n.sockets.map(s => new Socket(s));    
+            node.sockets = n.sockets.map(s => {
+                if (s.state.valueType == "variable" && s.state.max==-1) {
+                    s.state.max = Infinity;
+                }
+                return (new Socket(s));
+            }); 
             this.addNode(node);
         });
         jsonModel.links.forEach(l => {
@@ -210,7 +219,7 @@ class Model {
             const targetNode = this.getNodeByName(l.targetName);
             const targetLink = this.getLinkByName(l.targetName);
             const target = targetNode || targetLink;
-            this.addLog(new Log({name:l.name, target}));
+            this.addLog(new Log({name:l.name, target, colorIndex:l.colorIndex, targetName:l.targetName}));
         });
 
     }
@@ -225,12 +234,16 @@ class Model {
         const targetId = target || 'target';
         const ctx = new Context();
         ctx.addModel(this);
+        console.log(this.getNodeByName("Grid Supply"));
         const board = new Board({targetId, modelName:this.name, widthPerCent:100, height:800});
         ctx.addBoard(board);
         const nodeDisplayData = this.nodes.map(n => n.displayData);
         const linkDisplayData = this.links.map(l => l.displayData);
-        const box = new Box({x:10, y:10, widthPerCent:60, heightPerCent:90, className: "model-structure-viewer", component: new ModelStructureViewer({layout:{title:"Model structure"},data:{nodes:nodeDisplayData, links:linkDisplayData}}) })
-        board.addBox(box);
+        const logDisplayData = this.logs.map(l => l.displayData);
+        const boxModelStructure = new Box({x:10, y:10, widthPerCent:60, heightPerCent:90, className: "model-structure-viewer", component: new ModelStructureViewer({layout:{title:"Model structure"},data:{nodes:nodeDisplayData, links:linkDisplayData, logs:logDisplayData}}) })
+        board.addBox(boxModelStructure);
+        const boxLogViewer = new Box({x:600, y:10, widthPerCent:30, heightPerCent:50, className: "log-viewer", component: new LogViewer({layout:{title:"Logs"},data:{logs:logDisplayData}}) });
+        board.addBox(boxLogViewer);
         board.make();
         return ctx;
     }
