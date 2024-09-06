@@ -7,7 +7,7 @@ class Board extends bbBoard {
         super(options);
         this.sharedState.modelName = options.modelName || "modelName";
         this.sharedState.selectedNode = new Observable({state:{name:null}});
-        this.sharedState.selectedLog = new Observable({state:{name:null}});
+        this.sharedState.selectedLog = new Observable({state:{name:null, targetName:null}});
     }
 }
 

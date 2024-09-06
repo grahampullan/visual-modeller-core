@@ -5,6 +5,7 @@ class Link {
         this.socket1 = options.socket1 || null;
         this.socket2 = options.socket2 || null;
         this.state = options.state || {};
+        this.colorIndex = options.colorIndex || 0;
     }
 
     getOtherSocket(socket) {
@@ -20,7 +21,8 @@ class Link {
     get displayData() {
         return {
             name: this.name,
-            socketNames: [this.socket1.name, this.socket2.name]
+            socketNames: [this.socket1.name, this.socket2.name],
+            colorIndex: this.colorIndex
         };
     }
 
