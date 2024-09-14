@@ -5,6 +5,7 @@ import { Board } from '../ui/Board.js';
 import { Box } from '../ui/Box.js';
 import { ModelStructureViewer } from '../ui/ModelStructureViewer.js';
 import { LogViewer } from '../ui/LogViewer.js';
+import { NodeInspector } from '../ui/NodeInspector.js';
 
 class Model {
     constructor(options) {
@@ -235,15 +236,17 @@ class Model {
         const ctx = new Context();
         ctx.addModel(this);
         console.log(this.getNodeByName("Grid Supply"));
-        const board = new Board({targetId, modelName:this.name, widthPerCent:100, height:800});
+        const board = new Board({targetId, fixed:true, modelName:this.name, widthPerCent:100, height:800});
         ctx.addBoard(board);
         const nodeDisplayData = this.nodes.map(n => n.displayData);
         const linkDisplayData = this.links.map(l => l.displayData);
         const logDisplayData = this.logs.map(l => l.displayData);
-        const boxModelStructure = new Box({x:10, y:10, widthPerCent:60, heightPerCent:90, className: "model-structure-viewer", component: new ModelStructureViewer({layout:{title:"Model structure"},data:{nodes:nodeDisplayData, links:linkDisplayData, logs:logDisplayData}}) })
+        const boxModelStructure = new Box({fixed:true, xPerCent:2, yPerCent:2, widthPerCent:58, heightPerCent:90, className: "model-structure-viewer", component: new ModelStructureViewer({layout:{title:"Model structure"},data:{nodes:nodeDisplayData, links:linkDisplayData, logs:logDisplayData}}) })
         board.addBox(boxModelStructure);
-        const boxLogViewer = new Box({x:600, y:10, widthPerCent:30, heightPerCent:50, className: "log-viewer", component: new LogViewer({layout:{title:"Logs"},data:{logs:logDisplayData}}) });
+        const boxLogViewer = new Box({fixed:true, xPerCent:62, yPerCent:2, widthPerCent:36, heightPerCent:50, className: "log-viewer", component: new LogViewer({layout:{title:"Logs"},data:{logs:logDisplayData}}) });
         board.addBox(boxLogViewer);
+        const boxNodeInspector = new Box({fixed:true, xPerCent:62, yPerCent:54, widthPerCent:36, heightPerCent:38, className: "node-inspector", component: new NodeInspector({layout:{title:"Node Inspector"},data:null}) });
+        board.addBox(boxNodeInspector);
         board.make();
         return ctx;
     }

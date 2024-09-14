@@ -4423,6 +4423,8 @@ let Box$1 = class Box {
         this.height = options.height || 300;
         this.heightPerCent = options.heightPerCent;
         this.widthPerCent = options.widthPerCent;
+        this.xPerCent = options.xPerCent;
+        this.yPerCent = options.yPerCent;
         this.quantiseX = options.quantiseX || false;
         this.quantiseY = options.quantiseY || false;
         this.margin = options.margin || 0;
@@ -4430,6 +4432,7 @@ let Box$1 = class Box {
         this.gridWidth = options.gridWidth;
         this.gridY = options.gridY;
         this.gridHeight = options.gridHeight;
+        this.fixed = options.fixed || false;
         this.sharedState.gridXMax = options.gridXMax || 12;
         this.allowChildrenResizeOnBoardZoom = options.allowChildrenResizeOnBoardZoom || true;
         this.autoLayout = options.autoLayout || false;
@@ -4567,6 +4570,12 @@ let Box$1 = class Box {
         if ( this.quantiseY ) {
             this.y = this.gridY * this.dx;
             this.height = this.gridHeight * this.dx;
+        }
+        if ( this.xPerCent !== undefined ) {
+            this.x = this.xPerCent/100 * parentNode.clientWidth;
+        }
+        if ( this.yPerCent !== undefined ) {
+            this.y = this.yPerCent/100 * parentNode.clientHeight;
         }
     }
 
@@ -4963,13 +4972,16 @@ let Box$1 = class Box {
             .style("left", `${this.x + this.margin}px`)
             .style("top", `${this.y + this.margin}px`)
             .style("position","absolute")
-            .style("overflow","hidden")
-            .call(drag()
+            .style("overflow","hidden");
+        if (!this.fixed) {
+            div.call(drag()
                 .subject((e)=>({x: this.x, y: this.y }))
                 .on("start", boundDragStart )
                 .on("drag", boundDrag )
-                .on("end", boundDragEnd )); 
+                .on("end", boundDragEnd ));
+        }
 
+        if (!this.fixed) {
         div.append("div")
             .attr("class","board-box-left-drag")
             .style("left","-5px")
@@ -4984,7 +4996,9 @@ let Box$1 = class Box {
                 .on("drag", boundLeftDrag )
                 //.on("end", boundRequestParentAutoLayout));
                 .on("end", boundDragEnd )); 
+        }
 
+        if (!this.fixed) {
         div.append("div")
             .attr("class","board-box-right-drag")
             .style("right", "-5px")
@@ -4998,7 +5012,9 @@ let Box$1 = class Box {
                 .on("drag", boundRightDrag)
                 //.on("end", boundRequestParentAutoLayout));
                 .on("end", boundDragEnd )); 
+        }
 
+        if (!this.fixed) {
         div.append("div")
             .attr("class","board-box-bottom-drag")
             .style("left", "10px")
@@ -5012,7 +5028,9 @@ let Box$1 = class Box {
                 .on("drag", boundBottomDrag)
                 //.on("end", boundRequestParentAutoLayout));
                 .on("end", boundDragEnd )); 
+        }
 
+        if (!this.fixed) {
         div.append("div")
             .attr("class","board-box-bottom-left-drag")
             .style("left", "-5px")
@@ -5027,7 +5045,9 @@ let Box$1 = class Box {
                 .on("drag", boundBottomLeftDrag)
                 //.on("end", boundRequestParentAutoLayout));
                 .on("end", boundDragEnd )); 
+        }
 
+        if (!this.fixed) {
         div.append("div")
             .attr("class","board-box-bottom-right-drag")
             .style("right", "-5px")
@@ -5041,7 +5061,9 @@ let Box$1 = class Box {
                 .on("drag", boundBottomRightDrag)
                 //.on("end", boundRequestParentAutoLayout));
                 .on("end", boundDragEnd )); 
+        }
 
+        if (!this.fixed) {
         div.append("div")
             .attr("class","board-box-top-left-drag")
             .style("left", "-5px")
@@ -5056,7 +5078,9 @@ let Box$1 = class Box {
                 .on("drag", boundTopLeftDrag)
                 //.on("end", boundRequestParentAutoLayout));
                 .on("end", boundDragEnd )); 
+        }
 
+        if (!this.fixed) {
         div.append("div")
             .attr("class","board-box-top-right-drag")
             .style("right", "-5px")
@@ -5071,6 +5095,7 @@ let Box$1 = class Box {
                 .on("drag", boundTopRightDrag)
                 //.on("end", boundRequestParentAutoLayout));
                 .on("end", boundDragEnd )); 
+        }
 
         if (this.component !== undefined) {
             this.makeComponentDiv();
@@ -5135,6 +5160,7 @@ let Board$1 = class Board {
         this.height = options.height || 300;
         this.heightPerCent = options.heightPerCent;
         this.widthPerCent = options.widthPerCent;
+        this.fixed = options.fixed || false;
         this.sharedState.gridXMax = options.gridXMax || 12;
         const requestUpdateBoxes = new Observable({flag:false, state:{boxesToAdd:[], boxesToRemove:[]}});
         requestUpdateBoxes.subscribe(this.updateBoxes.bind(this));
@@ -5207,8 +5233,10 @@ let Board$1 = class Board {
             .style("width",`${this.width}px`)
             .style("height",`${this.height}px`)
             .style("position","relative")
-            .style("overflow","hidden")
-            .call(zoom().on("zoom", boundZoomed));
+            .style("overflow","hidden");
+        if (!this.fixed) {
+            select$1('#${this.id}').call(zoom().on("zoom", boundZoomed));
+        }
         this.update();
     }
 
@@ -5347,6 +5375,7 @@ class Context extends Context$1 {
     super();
     this.models = [];
     this.maxModel = 0;
+    this.sharedState.models = this.models;
   }
 
   getModelId() {
@@ -5359,7 +5388,7 @@ class Context extends Context$1 {
     model.id = this.getModelId();
     this.models.push(model);
   }
-  
+
 }
 
 class Board extends Board$1 {
@@ -5369,6 +5398,37 @@ class Board extends Board$1 {
         this.sharedState.modelName = options.modelName || "modelName";
         this.sharedState.selectedNode = new Observable({state:{name:null}});
         this.sharedState.selectedLog = new Observable({state:{name:null, targetName:null}});
+        const requestSetNodeStateData = new Observable({state:{}});
+        requestSetNodeStateData.subscribe(this.setNodeStateData.bind(this));
+        this.sharedState.requestSetNodeStateData = requestSetNodeStateData;
+        const requestRunModelAndUpdateViews = new Observable({flag:true});
+        requestRunModelAndUpdateViews.subscribe(this.runModelAndUpdateViews.bind(this));
+        this.sharedState.requestRunModelAndUpdateViews = requestRunModelAndUpdateViews;
+    }
+
+    setNodeStateData(data) {
+        console.log("in setNodeStateData", data);
+        const nodeName = data.nodeName;
+        const key = data.key;
+        const value = data.value;
+        const model = this.sharedStateByAncestorId["context"].models.find( model => model.name == this.sharedState.modelName );
+        const node = model.nodes.find( node => node.name == nodeName );
+        node.state[key] = value;
+    }
+
+    runModelAndUpdateViews() {
+        console.log("in runModelAndUpdate");
+        const model = this.sharedStateByAncestorId["context"].models.find( model => model.name == this.sharedState.modelName );
+        model.clearLogs();
+        model.run();
+        this.boxes[0];
+        const logViewerBox = this.boxes[1];
+        //modelStructureBox.component.data = {nodes:model.nodes.map(n => n.displayData), links:model.links.map(l => l.displayData)};
+        console.log(model.logs);
+        console.log(model.logs.map(l => l.displayData));
+        logViewerBox.component.data={logs:model.logs.map(l => l.displayData)};
+        logViewerBox.component.update();
+        //this.update();
     }
 }
 
@@ -8213,6 +8273,7 @@ class NodePlot extends Plot {
 		const plotArea = container.select(".plot-area");
         const parentId = this.ancestorIds[this.ancestorIds.length - 1];
         const socketAbsolutePositions = this.sharedStateByAncestorId[parentId].socketAbsolutePositions;
+        const selectedNode = this.sharedStateByAncestorId[this.boardId].selectedNode;
 
         this.updatePlotAreaSize();
 
@@ -8222,6 +8283,8 @@ class NodePlot extends Plot {
         let nodeRect = plotArea.select(".node-rect");
         let nodeTitle = plotArea.select(".node-title");
         if (nodeRect.empty()) {
+            console.log("nodeRect");
+            console.log(node);
             nodeRect = plotArea.append("rect")
                 .attr("class", "node-rect")
                 .attr("x", nodeBoxMargin)
@@ -8229,7 +8292,9 @@ class NodePlot extends Plot {
                 .attr("fill", Tableau10[node.colorIndex])
                 .attr("stroke", "black")
                 .attr("stroke-width", 2)
-                .attr("rx", 10);
+                .attr("rx", 10)
+                .style("pointer-events", "all")
+                .on("click", () => {console.log("node clicked", node.name); selectedNode.state = {name: node.name};});
             nodeTitle = plotArea.append("text")
                 .attr("class", "node-title")
                 .attr("x", nodeRectWidth/2. + nodeBoxMargin )
@@ -8321,6 +8386,7 @@ class NodePlot extends Plot {
                 socketAbsolutePositions.find( s => s.socketName == socket.name).position.state = {socketName: socket.name, cen, normal};
             }
         }
+
     }
 }
 
@@ -8480,9 +8546,9 @@ class LogViewer extends Plot {
     make() {
         this.updateHeader();
         this.addPlotAreaSvg();
-        this.update();
         const selectedLog = this.sharedStateByAncestorId[this.boardId].selectedLog;
         selectedLog.subscribe(this.highlightLog.bind(this));
+        this.update();
     }
 
     update() {
@@ -8611,6 +8677,137 @@ class LogViewer extends Plot {
     }
 
     
+}
+
+class NodeInspector extends Plot {
+    constructor(options) {
+        options = options || {};
+        super(options);
+    }
+
+    make() {
+        this.updateHeader();
+        this.addPlotAreaDiv();
+        const selectedNode= this.sharedStateByAncestorId[this.boardId].selectedNode;
+        selectedNode.subscribe(this.update.bind(this));
+        const plotArea = select(`#${this.plotAreaId}`);
+        plotArea.style("pointer-events", "all");
+        plotArea.append("div")
+            .attr("id", "sliders")
+            .style("pointer-events", "all");
+    }
+
+    update() {
+        console.log("in NodeInspector update");
+        const selectedNode = this.sharedStateByAncestorId[this.boardId].selectedNode;
+        const nodeName = selectedNode.state.name;
+        const modelName = this.sharedStateByAncestorId[this.boardId].modelName;
+        const model = this.sharedStateByAncestorId["context"].models.find( model => model.name == modelName );
+        const node = model.nodes.find( node => node.name == nodeName );
+        console.log(node.state);
+
+        const requestSetNodeStateData = this.sharedStateByAncestorId[this.boardId].requestSetNodeStateData;
+        const requestRunModelAndUpdateViews = this.sharedStateByAncestorId[this.boardId].requestRunModelAndUpdateViews;
+
+        const plotArea = select(`#${this.plotAreaId}`);
+
+        plotArea.select(".node-title").remove();
+        plotArea.append("div")
+            .attr("class", "node-title")
+            .style("font-size", "16px")
+            .style("font-weight", "bold")
+            .style("margin-top", "5px")
+            .style("margin-bottom", "2px")
+            .text(nodeName);
+
+        plotArea.select(".sliders").remove();
+        const slidersContainer = plotArea.append("div")
+            .attr("class", "sliders");
+
+        const sliderData = Object.entries(node.state).map(([key, value]) => {
+            return {name: key, value: value, min: 0., max: 2*value};
+        });
+
+
+        const sliders = slidersContainer.selectAll(".slider-container")
+            .data(sliderData);
+
+        sliders
+            .join(
+                // Enter selection: append new slider containers for new data
+                enter => {
+                    const container = enter.append("div")
+                        .attr("class", "slider-container")
+                        .style("display", "flex")
+                        .style("flex-direction", "column")
+                        .style("padding", "10px 0");
+
+                    // Add name label for the parameter
+                    container.append("div")
+                        .attr("class", "slider-label")
+                        .text(d => d.name)
+                        .style("font-size", "12px")
+                        .style("font-weight", "bold")
+                        //.style("margin-bottom", "5px")
+                        .style("text-align", "left");
+
+                    const sliderWrapper = container.append("div")
+                        .attr("class", "slider-wrapper")
+                        .style("display", "flex")
+                        .style("align-items", "center")
+                        .style("gap", "10px");
+
+
+                    // Add the range slider
+                    sliderWrapper.append("input")
+                        .attr("type", "range")
+                        .attr("class", "slider")
+                        .attr("id", d => `slider-${d.name}`)
+                        .attr("min", d => d.min)
+                        .attr("max", d => d.max)
+                        .attr("value", d => d.value)
+                        .attr("step", d=>(d.max - d.min) / 200)
+                        .style("width", "200px")
+                        .on("input", function(event, d) {
+                            // Update displayed value
+                            select(`#value-${d.name}`).text(this.value);
+                            updateSliderRange(d.name);
+                        });
+
+                    // Add label to show current slider value
+                    sliderWrapper.append("div")
+                        .attr("class", "slider-value")
+                        .attr("id", d => `value-${d.name}`)
+                        .style("font-size", "14px")
+                        .style("min-width", "50px")
+                        .style("text-align", "center")
+                        .text(d => d.value);
+                },
+              
+                // Exit selection: remove any sliders that no longer have corresponding data
+                exit => exit.remove()
+            );
+
+        
+
+
+
+
+        // Function to update sliders based on the bound data
+        function updateSliderRange(key) {
+            
+            const currentValue = +select(`#slider-${key}`).node().value;
+
+            requestSetNodeStateData.state = {nodeName: nodeName, key: key, value: currentValue};
+            requestRunModelAndUpdateViews.state = true;
+            
+
+
+
+        }
+
+    }
+
 }
 
 class Model {
@@ -8842,15 +9039,17 @@ class Model {
         const ctx = new Context();
         ctx.addModel(this);
         console.log(this.getNodeByName("Grid Supply"));
-        const board = new Board({targetId, modelName:this.name, widthPerCent:100, height:800});
+        const board = new Board({targetId, fixed:true, modelName:this.name, widthPerCent:100, height:800});
         ctx.addBoard(board);
         const nodeDisplayData = this.nodes.map(n => n.displayData);
         const linkDisplayData = this.links.map(l => l.displayData);
         const logDisplayData = this.logs.map(l => l.displayData);
-        const boxModelStructure = new Box({x:10, y:10, widthPerCent:60, heightPerCent:90, className: "model-structure-viewer", component: new ModelStructureViewer({layout:{title:"Model structure"},data:{nodes:nodeDisplayData, links:linkDisplayData, logs:logDisplayData}}) });
+        const boxModelStructure = new Box({fixed:true, xPerCent:2, yPerCent:2, widthPerCent:58, heightPerCent:90, className: "model-structure-viewer", component: new ModelStructureViewer({layout:{title:"Model structure"},data:{nodes:nodeDisplayData, links:linkDisplayData, logs:logDisplayData}}) });
         board.addBox(boxModelStructure);
-        const boxLogViewer = new Box({x:600, y:10, widthPerCent:30, heightPerCent:50, className: "log-viewer", component: new LogViewer({layout:{title:"Logs"},data:{logs:logDisplayData}}) });
+        const boxLogViewer = new Box({fixed:true, xPerCent:62, yPerCent:2, widthPerCent:36, heightPerCent:50, className: "log-viewer", component: new LogViewer({layout:{title:"Logs"},data:{logs:logDisplayData}}) });
         board.addBox(boxLogViewer);
+        const boxNodeInspector = new Box({fixed:true, xPerCent:62, yPerCent:54, widthPerCent:36, heightPerCent:38, className: "node-inspector", component: new NodeInspector({layout:{title:"Node Inspector"},data:null}) });
+        board.addBox(boxNodeInspector);
         board.make();
         return ctx;
     }
