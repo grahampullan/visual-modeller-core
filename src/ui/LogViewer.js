@@ -10,9 +10,9 @@ class LogViewer extends Plot {
     make() {
         this.updateHeader();
         this.addPlotAreaSvg();
-        this.update();
         const selectedLog = this.sharedStateByAncestorId[this.boardId].selectedLog;
         selectedLog.subscribe(this.highlightLog.bind(this));
+        this.update();
     }
 
     update() {

@@ -5,6 +5,7 @@ class Context extends bbContext {
     super();
     this.models = [];
     this.maxModel = 0;
+    this.sharedState.models = this.models;
   }
 
   getModelId() {
@@ -17,7 +18,7 @@ class Context extends bbContext {
     model.id = this.getModelId();
     this.models.push(model);
   }
-  
+
 }
 
 export { Context };

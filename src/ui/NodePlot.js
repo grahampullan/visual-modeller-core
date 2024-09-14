@@ -24,6 +24,7 @@ class NodePlot extends Plot {
 		const plotArea = container.select(".plot-area");
         const parentId = this.ancestorIds[this.ancestorIds.length - 1];
         const socketAbsolutePositions = this.sharedStateByAncestorId[parentId].socketAbsolutePositions;
+        const selectedNode = this.sharedStateByAncestorId[this.boardId].selectedNode;
 
         this.updatePlotAreaSize();
 
@@ -33,6 +34,8 @@ class NodePlot extends Plot {
         let nodeRect = plotArea.select(".node-rect");
         let nodeTitle = plotArea.select(".node-title");
         if (nodeRect.empty()) {
+            console.log("nodeRect");
+            console.log(node);
             nodeRect = plotArea.append("rect")
                 .attr("class", "node-rect")
                 .attr("x", nodeBoxMargin)
@@ -40,7 +43,9 @@ class NodePlot extends Plot {
                 .attr("fill", d3.schemeTableau10[node.colorIndex])
                 .attr("stroke", "black")
                 .attr("stroke-width", 2)
-                .attr("rx", 10);
+                .attr("rx", 10)
+                .style("pointer-events", "all")
+                .on("click", () => {console.log("node clicked", node.name); selectedNode.state = {name: node.name};});
             nodeTitle = plotArea.append("text")
                 .attr("class", "node-title")
                 .attr("x", nodeRectWidth/2. + nodeBoxMargin )
@@ -132,6 +137,7 @@ class NodePlot extends Plot {
                 socketAbsolutePositions.find( s => s.socketName == socket.name).position.state = {socketName: socket.name, cen, normal};
             }
         }
+
     }
 }
 
