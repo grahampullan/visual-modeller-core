@@ -236,7 +236,7 @@ class Model {
         const ctx = new Context();
         ctx.addModel(this);
         console.log(this.getNodeByName("Grid Supply"));
-        const board = new Board({targetId, fixed:true, modelName:this.name, widthPerCent:100, height:800});
+        const board = new Board({targetId, fixed:true, modelName:this.name, widthPerCent:100, height:600});
         ctx.addBoard(board);
         const nodeDisplayData = this.nodes.map(n => n.displayData);
         const linkDisplayData = this.links.map(l => l.displayData);
