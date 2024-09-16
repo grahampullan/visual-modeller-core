@@ -5407,7 +5407,6 @@ class Board extends Board$1 {
     }
 
     setNodeStateData(data) {
-        console.log("in setNodeStateData", data);
         const nodeName = data.nodeName;
         const key = data.key;
         const value = data.value;
@@ -5417,18 +5416,13 @@ class Board extends Board$1 {
     }
 
     runModelAndUpdateViews() {
-        console.log("in runModelAndUpdate");
         const model = this.sharedStateByAncestorId["context"].models.find( model => model.name == this.sharedState.modelName );
         model.clearLogs();
         model.run();
         this.boxes[0];
         const logViewerBox = this.boxes[1];
-        //modelStructureBox.component.data = {nodes:model.nodes.map(n => n.displayData), links:model.links.map(l => l.displayData)};
-        console.log(model.logs);
-        console.log(model.logs.map(l => l.displayData));
         logViewerBox.component.data={logs:model.logs.map(l => l.displayData)};
         logViewerBox.component.update();
-        //this.update();
     }
 }
 
