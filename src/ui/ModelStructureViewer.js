@@ -114,7 +114,9 @@ class ModelStructureViewer extends Plot {
                     .attr("marker-end", `url(#arrowhead-${link.colorIndex})`)
                     .on("mouseover", tipOnLink);
             } else {
-                linkPath.attr("d", pathData);
+                linkPath
+                    .datum(link)
+                    .attr("d", pathData);
             }
         }
 
