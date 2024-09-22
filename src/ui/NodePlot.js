@@ -34,8 +34,6 @@ class NodePlot extends Plot {
         let nodeRect = plotArea.select(".node-rect");
         let nodeTitle = plotArea.select(".node-title");
         if (nodeRect.empty()) {
-            console.log("nodeRect");
-            console.log(node);
             nodeRect = plotArea.append("rect")
                 .attr("class", "node-rect")
                 .attr("x", nodeBoxMargin)
@@ -45,7 +43,7 @@ class NodePlot extends Plot {
                 .attr("stroke-width", 2)
                 .attr("rx", 10)
                 .style("pointer-events", "all")
-                .on("click", () => {console.log("node clicked", node.name); selectedNode.state = {name: node.name};});
+                .on("click", () => {selectedNode.state = {name: node.name};});
             nodeTitle = plotArea.append("text")
                 .attr("class", "node-title")
                 .attr("x", nodeRectWidth/2. + nodeBoxMargin )

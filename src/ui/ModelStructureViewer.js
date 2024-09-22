@@ -112,7 +112,8 @@ class ModelStructureViewer extends Plot {
                     .attr("stroke", d3.schemeTableau10[link.colorIndex])
                     .attr("stroke-width", 2)
                     .attr("marker-end", `url(#arrowhead-${link.colorIndex})`)
-                    .on("mouseover", tipOnLink);
+                    .on("mouseenter", tipOnLink)
+                    .on("mouseleave", tipOffLink);
             } else {
                 linkPath
                     .datum(link)
@@ -127,12 +128,19 @@ class ModelStructureViewer extends Plot {
                 selectedLog.state = {name: log.name, targetName: log.targetName};
             }
         }
+
+        function tipOffLink(event, d) {
+            selectedLog.state = {name: null, targetName: null};
+        }
     }
 
     highlightLog(data) {
         const targetName = data.targetName;
         if (this.data.links.map(l => l.name).includes(targetName)) {
-           this.highlightLink(targetName);
+            this.highlightLink(targetName);
+        }
+        if (!targetName) {
+            this.highlightLink("");
         }
     }
 

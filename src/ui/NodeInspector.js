@@ -20,13 +20,11 @@ class NodeInspector extends Plot {
     }
 
     update() {
-        console.log("in NodeInspector update");
         const selectedNode = this.sharedStateByAncestorId[this.boardId].selectedNode;
         const nodeName = selectedNode.state.name;
         const modelName = this.sharedStateByAncestorId[this.boardId].modelName;
         const model = this.sharedStateByAncestorId["context"].models.find( model => model.name == modelName );
         const node = model.nodes.find( node => node.name == nodeName );
-        console.log(node.state);
 
         const requestSetNodeStateData = this.sharedStateByAncestorId[this.boardId].requestSetNodeStateData;
         const requestRunModelAndUpdateViews = this.sharedStateByAncestorId[this.boardId].requestRunModelAndUpdateViews;

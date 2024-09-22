@@ -1,5 +1,6 @@
 import { Component } from 'board-box';
 import * as d3 from './d3-re-export.js';
+import { icon } from '@fortawesome/fontawesome-svg-core'
 
 
 class Plot extends Component {
@@ -109,17 +110,69 @@ class Plot extends Component {
                 .style("top", "0")
                 .style("left", "0")
                 .style("width", "100%")
-                //.style("width", `${this.width}px`)
-                .text(this.layout.title);
+                .style("display", "flex")
+                .style("justify-content", "space-between")
+                .style("align-items", "center")
+                .append("div")
+                    .attr("class", "plot-title-text")
+                    .style("text-align", "left")
+                    .text(this.layout.title);
             this.headerOffset = newTitle.node().clientHeight + 3;
         } else {
-            title.text(this.layout.title);
+            title.select(".plot-title-text").text(this.layout.title);
             this.headerOffset = title.node().clientHeight + 3;
         }
     }
 
+    addIcons() {
+        const container = d3.select(`#${this.id}`);
+        const iconList = this.icons;
+        if (!iconList || iconList.length === 0) {
+            container.select(".plot-icons").remove();
+            return; 
+        }
+        const title = container.select(".plot-title");
+        let iconContainer = container.select(".plot-title").select(".plot-icons");
+        if ( iconContainer.empty() ) {
+            if ( title.empty() ) {
+                iconContainer = container.append("div");
+            } else {
+                iconContainer = title.append("div");
+            }
+            iconContainer
+                .attr("class", "plot-icons")
+                .attr("id", `${this.id}-plot-icons`)
+                //.style("position", "absolute")
+                //.style("top", "0")
+                //.style("right", "0")
+                .style("display", "flex")
+                .style("justify-content", "flex-end")
+                .style("align-items", "center")
+                .style("pointer-events", "all");
+        }
+
+        const icons = iconContainer.selectAll(".plot-icon").data(iconList);
+
+        icons.enter()
+            .append("div")
+                .attr("class", "plot-icon")
+                .attr("id", (d,i) => {
+                    if (d.id) {
+                        return d.id;
+                    } else {
+                        return `icon-${i}`;
+                    }
+                })
+                .style("margin-left", "5px")
+                .style("font-size", "1.0em")
+                .html(d => icon(d.icon).html)
+                .on("click", function(e,d){d.action()} );
+        icons.exit().remove();
+    }
+
     updateHeader() {
         this.addTitle();
+        this.addIcons();
         return;
     }
 
