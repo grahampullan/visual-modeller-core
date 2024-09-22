@@ -8229,6 +8229,7 @@ class Plot extends Component {
                 .style("top", "0")
                 .style("left", "0")
                 .style("width", "100%")
+                //.style("width", `${this.width}px`)
                 .text(this.layout.title);
             this.headerOffset = newTitle.node().clientHeight + 3;
         } else {
