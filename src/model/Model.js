@@ -242,11 +242,11 @@ class Model {
         const nodeDisplayData = this.nodes.map(n => n.displayData);
         const linkDisplayData = this.links.map(l => l.displayData);
         const logDisplayData = this.logs.map(l => l.displayData);
-        const boxModelStructure = new Box({fixed:true, xPerCent:2, yPerCent:2, widthPerCent:58, heightPerCent:90, className: "model-structure-viewer", component: new ModelStructureViewer({layout:{title:"Model structure"},data:{nodes:nodeDisplayData, links:linkDisplayData, logs:logDisplayData}}) })
+        const boxModelStructure = new Box({fixed:true, xPerCent:2, yPerCent:2, widthPerCent:58, heightPerCent:96, className: "model-structure-viewer", component: new ModelStructureViewer({layout:{title:"Model structure"},data:{nodes:nodeDisplayData, links:linkDisplayData, logs:logDisplayData}}) })
         board.addBox(boxModelStructure);
         const boxLogViewer = new Box({fixed:true, xPerCent:62, yPerCent:2, widthPerCent:36, heightPerCent:50, className: "log-viewer", component: new LogViewer({layout:{title:"Logs"},data:{logs:logDisplayData}}) });
         board.addBox(boxLogViewer);
-        const boxNodeInspector = new Box({fixed:true, xPerCent:62, yPerCent:54, widthPerCent:36, heightPerCent:38, className: "node-inspector", component: new NodeInspector({layout:{title:"Node Inspector"},data:null}) });
+        const boxNodeInspector = new Box({fixed:true, xPerCent:62, yPerCent:54, widthPerCent:36, heightPerCent:44, className: "node-inspector", component: new NodeInspector({layout:{title:"Node Inspector"},data:null}) });
         board.addBox(boxNodeInspector);
         board.make();
         return ctx;
