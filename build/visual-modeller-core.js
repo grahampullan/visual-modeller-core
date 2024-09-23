@@ -12057,28 +12057,23 @@ class LogViewer extends Plot {
             if (gX.empty()) {
                 gX = barChartSvg.append("g")
                     .attr("class", "x-axis")
-                    .attr("transform", `translate(0, ${height})`)
-                    .call(xAxis)
-                    .selectAll("text")
-                        .attr("y", 0)
-                        .attr("x", 0)
-                        .attr("dy", ".35em")
-                        .attr("transform", "translate(0, 10)")  // Adjust vertical positioning
-                        .style("text-anchor", "middle")
-                        .call(wrapText, x.bandwidth());
-                        
-            } else {
-                gX.call(xAxis);
+                    .attr("transform", `translate(0, ${height})`);
             }
+            gX.call(xAxis)
+                .selectAll("text")
+                .attr("y", 0)
+                .attr("x", 0)
+                .attr("dy", ".35em")
+                .attr("transform", "translate(0, 10)")
+                .style("text-anchor", "middle")
+                .call(wrapText, x.bandwidth());
 
             let gY = barChartSvg.select(".y-axis");
             if (gY.empty()) {
                 gY = barChartSvg.append("g")
-                    .attr("class", "y-axis")
-                    .call(yAxis);
-            } else {
-                gY.call(yAxis);
+                    .attr("class", "y-axis");
             }
+            gY.call(yAxis);
         }
 
         function tipOn(event, d) {
