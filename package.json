@@ -1,6 +1,6 @@
 {
   "name": "visual-modeller-core",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Interactive systems modelling in the browser",
   "main": "build/visual-modeller-core.min.js",
   "module": "build/visual-modeller-core.js",
