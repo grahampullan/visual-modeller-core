@@ -12524,11 +12524,13 @@ class Model {
         this.fromJsonObject(json);
     }
 
-    startVis(target) {
-        const targetId = target || 'target';
+    startVis(options) {
+        options = options || {};
+        const targetId = options.targetId || 'target';
+        const height = options.height || 600;
         const ctx = new Context();
         ctx.addModel(this);
-        const board = new Board({targetId, fixed:true, modelName:this.name, widthPerCent:100, height:600});
+        const board = new Board({targetId, fixed:true, modelName:this.name, widthPerCent:100, height:height});
         ctx.addBoard(board);
         const nodeDisplayData = this.nodes.map(n => n.displayData);
         const linkDisplayData = this.links.map(l => l.displayData);
