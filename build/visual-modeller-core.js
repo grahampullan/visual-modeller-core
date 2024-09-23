@@ -12178,10 +12178,13 @@ class NodeInspector extends Plot {
         const selectedNode= this.sharedStateByAncestorId[this.boardId].selectedNode;
         selectedNode.subscribe(this.update.bind(this));
         const plotArea = select(`#${this.plotAreaId}`);
-        plotArea.style("pointer-events", "all");
-        plotArea.append("div")
-            .attr("id", "sliders")
-            .style("pointer-events", "all");
+        plotArea
+            .style("pointer-events", "all")
+            .style("overflow-y", "auto")
+            .style("overflow-x", "hidden");
+        //plotArea.append("div")
+        //    .attr("id", "sliders")
+        //   .style("pointer-events", "all");
     }
 
     update() {
@@ -12208,6 +12211,7 @@ class NodeInspector extends Plot {
         plotArea.select(".sliders").remove();
         const slidersContainer = plotArea.append("div")
             .attr("class", "sliders");
+            
 
         const sliderData = Object.entries(node.state).map(([key, value]) => {
             return {name: key, value: value, min: 0., max: 2*value};
