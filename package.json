@@ -27,7 +27,7 @@
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.6.0",
     "@fortawesome/free-solid-svg-icons": "^6.6.0",
-    "board-box": "^0.2.42",
+    "board-box": "^0.2.43",
     "d3-array": "^3.2.4",
     "d3-axis": "^3.0.0",
     "d3-scale": "^4.0.2",
